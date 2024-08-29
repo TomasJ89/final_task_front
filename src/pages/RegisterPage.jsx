@@ -21,7 +21,7 @@ const RegisterPage = () => {
             passwordTwo: passTwoRef.current.value
         }
         const res = await http.post("/register",data)
-        console.log(res)
+
         if (res.success) {
 
             nav("/")

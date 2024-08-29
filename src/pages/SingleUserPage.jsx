@@ -1,41 +1,73 @@
-import React, {useEffect, useState} from 'react';
-import {useParams} from "react-router-dom";
-import http from "../plugins/http.jsx";
+
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import http from '../plugins/http.jsx';
+import mainStore from '../store/mainStore.jsx';
+
 const SingleUserPage = () => {
-    const {username} = useParams()
-    const [singleUser,setSingleUser] = useState(null)
+    const { setUser, user } = mainStore();
+    const { username } = useParams();
+    const [singleUser, setSingleUser] = useState(null);
+    const [commonConversations, setCommonConversations] = useState([]);
+    const nav = useNavigate();
 
     useEffect(() => {
         const fetchSingleUser = async () => {
             try {
                 const res = await http.get(`/user/${username}`);
                 if (res.success) {
-                    setSingleUser(res.data)
+                    setSingleUser(res.data);
+                } else {
+                    console.error("Failed to fetch user");
                 }
             } catch (error) {
                 console.error("Error fetching user", error);
             }
         };
         fetchSingleUser();
-    }, []);
+    }, [username]);
 
+    async function createConversation(singleUser) {
+        if (!singleUser || !user) return; // Ensure singleUser and user are defined
 
+        const data = {
+            id: singleUser._id
+        };
+
+        const token = localStorage.getItem(`${user.username} token`);
+        if (!token) {
+            console.error("No token found for the user");
+            return;
+        }
+
+        try {
+            const res = await http.postAuth("/create-conversation", data, token);
+            if (res.success) {
+                setUser(res.data.updateUser);
+                nav(`/chat/${res.data.conversation._id}`);
+            } else {
+                console.error("Failed to create conversation");
+            }
+        } catch (error) {
+            console.error("Error creating conversation", error);
+        }
+    }
+
+    function getCommonConversations(userConversations, singleUserConversations) {
+        return userConversations.filter(convId => singleUserConversations.includes(convId));
+    }
+
+    useEffect(() => {
+        if (singleUser && user) {
+            const commonConvs = getCommonConversations(user.conversations, singleUser.conversations);
+            setCommonConversations(commonConvs);
+            console.log("Common conversations:", commonConvs);
+        }
+    }, [singleUser, user]);
+    console.log(commonConversations[0])
+    console.log(commonConversations)
     return (
         <div className="p-5 flex justify-center ">
-            {/*<div className="card lg:card-side bg-base-100 shadow-xl ">*/}
-            {/*    <figure>*/}
-            {/*        <img*/}
-            {/*            src={singleUser?.image}*/}
-            {/*            alt={singleUser?.username}/>*/}
-            {/*    </figure>*/}
-            {/*    <div className="card-body">*/}
-            {/*        <h2 className="card-title">{singleUser?.username}</h2>*/}
-            {/*        <p>Here could be a description about the user</p>*/}
-            {/*        <div className="card-actions justify-end">*/}
-            {/*            <button className="btn btn-primary">Listen</button>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
             <div className="card glass w-96">
                 <figure>
                     <img
@@ -46,7 +78,9 @@ const SingleUserPage = () => {
                     <h2 className="card-title">{singleUser?.username}</h2>
                     <p>Here could be a description about the user</p>
                     <div className="card-actions justify-end">
-                        <button className="btn bg-blue-300">Go chat!</button>
+                        <button className="btn bg-blue-300"
+                                onClick={()=>{commonConversations.length > 0?
+                                    nav(`/chat/${commonConversations[0]}`): createConversation(singleUser)}}>Go chat!</button>
                     </div>
                 </div>
             </div>

@@ -22,7 +22,7 @@ const ProfilePage = () => {
             const data = {
                 url: imgRef.current.value,
             }
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem(`${user.username} token`);
             const res = await http.postAuth("/update-photo", data, token)
             if (res.success) {
                 setUser(res.data)
@@ -40,7 +40,7 @@ const ProfilePage = () => {
             const data = {
                 name: nameRef.current.value,
             }
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem(`${user.username} token`);
             const res = await http.postAuth("/update-username", data, token)
             if (res.success) {
                 setUser(res.data)
@@ -59,7 +59,7 @@ const ProfilePage = () => {
                 oldPassword: oldPassRef.current.value,
                 newPassword: newPassRef.current.value
             }
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem(`${user.username} token`);
             const res = await http.postAuth("/update-password", data, token)
             if (res.success) {
                 setGoodNews(res.message)
@@ -103,7 +103,7 @@ const ProfilePage = () => {
                                 <h2 className="card-title ">{user?.username}</h2>
                                 <p>Aš pupius fainuoliukas</p>
                                 <div className="card-actions justify-end">
-                                    <button className="btn btn-primary"
+                                    <button className="btn bg-blue-300"
                                             onClick={()=> nav("/conversations")}>My Conversations
                                         ({user?.conversations.length})
                                     </button>
@@ -138,7 +138,7 @@ const ProfilePage = () => {
                                     ref={nameRef}
                                 />
                             </label>
-                            <button className="btn bg-gray-300  w-full my-2" onClick={changeUsername}>
+                            <button className="btn bg-blue-300  w-full my-2" onClick={changeUsername}>
                                 Change username
                             </button>
                             <a>Profile photo:</a>
@@ -150,7 +150,7 @@ const ProfilePage = () => {
                                     placeholder="Photo URL"
                                     defaultValue={user?.image}/>
                             </label>
-                            <button className="btn bg-gray-300  w-full my-2" onClick={changePhoto}>
+                            <button className="btn bg-blue-300  w-full my-2" onClick={changePhoto}>
                                 Change photo
                             </button>
 
@@ -172,7 +172,7 @@ const ProfilePage = () => {
                                 />
                             </label>
                             <button
-                                className="btn bg-gray-300  w-full my-2" onClick={changePassword}>
+                                className="btn bg-blue-300  w-full my-2" onClick={changePassword}>
                                 Change password
                             </button>
                             {error && <a className="text-sm text-red-500 ">

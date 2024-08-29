@@ -1,16 +1,17 @@
 import React, {useState} from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import mainStore from "../store/mainStore.jsx";
-
+import {socket} from "../plugins/sockets.jsx";
 
 const Toolbar = () => {
     const {loggedIn,setUser, setLoggedIn,user} = mainStore()
     const nav = useNavigate()
     function logOut() {
-        localStorage.setItem("token", null);
+        localStorage.setItem(`${user.username} token`, null);
         setLoggedIn(false);
         setUser(null);
         nav("/");
+        socket.emit("logout")
     }
 
     return (
@@ -43,7 +44,7 @@ const Toolbar = () => {
                                     <Link to="/allUsers">All Users</Link>
                                 </li>
                                 <li>
-                                    <Link to="/conversations">Conversations ({user?.conversations.length})</Link>
+                                    <Link to="/conversations">My Conversations ({user?.conversations.length})</Link>
                                 </li>
                                 <li>
                                     <button onClick={logOut}>Log Out</button>
@@ -59,20 +60,31 @@ const Toolbar = () => {
                             }
                         </ul>
                     </div>
-                    <a className="btn bg-blue-300 text-xl font-thin">Bazaras</a>
+                    <a className="btn bg-blue-300 text-xl font-thin">ChattApp</a>
                 </div>
                 <div className="navbar-center hidden lg:flex">
-                    <ul className="menu menu-horizontal px-1 gap-2">
+                    <ul className="menu menu-horizontal flex items-center  px-1 gap-2 space-x-6">
                         {loggedIn &&
                             <>
                                 <li>
-                                    <Link to="/profile">My profile</Link>
+                                    <Link to="/profile" className="flex items-center space-x-3">
+                                        <div className="chat-image avatar">
+                                            <div className="w-8 rounded-full">
+                                                <img alt="Profile" src={user.image}/>
+                                            </div>
+                                        </div>
+                                        <span>My profile</span>
+                                    </Link>
                                 </li>
                                 <li>
-                                    <Link to="/allUsers">All Users</Link>
+                                    <Link to="/allUsers" className="flex items-center space-x-3">
+                                        <span>All Users</span>
+                                    </Link>
                                 </li>
                                 <li>
-                                    <Link to="/conversations">Conversations ({user?.conversations.length})</Link>
+                                    <Link to="/conversations" className="flex items-center space-x-3">
+                                        <span>My Conversations ({user?.conversations.length})</span>
+                                    </Link>
                                 </li>
                             </>
                         }
@@ -82,7 +94,7 @@ const Toolbar = () => {
 
                 <div className="navbar-end hidden lg:flex">
                     {loggedIn ? (
-                        <a className="btn" onClick={logOut}>Logout</a>
+                        <a className="btn " onClick={logOut}>Logout</a>
                     ) : (
                         <>
                             <a className="btn me-2" onClick={() => nav("/")}>Login</a>

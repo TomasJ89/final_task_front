@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom";
 
 const AllUsersPage = () => {
 
-    const {user} = mainStore()
+    const {user,onlineUsers} = mainStore()
     const [allUsers,setAllUsers] =useState([])
     const [error, setError] = useState(null);
     const nav= useNavigate()
@@ -41,7 +41,7 @@ const AllUsersPage = () => {
                             <td >
                             <div className="flex justify-center items-center gap-3 cursor-pointer"
                                  onClick={()=> nav(`/user/${user.username}`)} >
-                                <div className="avatar offline">
+                                <div className={`avatar ${onlineUsers.find(x => x.userId === user._id) ? "online" : "offline"}`}>
                                     <div className="w-24 rounded-full">
                                         <img
                                             src={user.image}
@@ -51,7 +51,7 @@ const AllUsersPage = () => {
                                 </div>
                                 <div>
                                         <div className="font-bold">{user.username}</div>
-                                        <div className="text-sm opacity-50">"Offline"</div>
+                                        <div className="text-sm opacity-50">{onlineUsers.find(x => x.userId === user._id) ? "Online" : "Offline"}</div>
                                     </div>
                                 </div>
                             </td>

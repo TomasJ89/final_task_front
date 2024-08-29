@@ -1,14 +1,14 @@
-import React, {useState,useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {useNavigate} from "react-router-dom";
 import http from "../plugins/http.jsx";
 import mainStore from "../store/mainStore.jsx";
-const LoginPage = () => {
+const LoginPage = ({socket}) => {
     const nav = useNavigate()
     const [error,setError] = useState(null)
     const [passHide,setPassHide] = useState(true)
     const nameRef = useRef()
     const passRef = useRef();
-    const {setLoggedIn,setUser} = mainStore()
+    const {setLoggedIn,setUser,user,setOnlineUsers} = mainStore()
     async function login() {
         setError(null);
         if (!nameRef.current.value || !passRef.current.value ) {
@@ -20,15 +20,23 @@ const LoginPage = () => {
         };
         const res = await http.post("/login", user);
         if (res.success) {
-            localStorage.setItem("token", res.token)
+           console.log(res)
+            localStorage.setItem(`${res.data.username} token`, res.token)
             setLoggedIn(true);
             setUser(res.data)
             nav('/profile');
             setError(null)
+            socket.emit("login",res.data)
         } else {
             setError(res.message);
         }
     }
+
+    useEffect(() => {
+        socket.on("getUsers", data => {
+            setOnlineUsers(data)
+        })
+    }, [])
     return (
         <div>
             <div className="relative flex flex-col items-center justify-center h-[80vh] overflow-hidden mx-5">
