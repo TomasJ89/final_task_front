@@ -1,29 +1,34 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import http from '../plugins/http.jsx';
 import mainStore from '../store/mainStore.jsx';
+import {socket} from "../plugins/sockets.jsx";
+import socketListener from "../plugins/socketListener.jsx";
 
 const SingleUserPage = () => {
-    const { setUser, user } = mainStore();
+    const { setUser, user,socketTrigger ,setSocketTrigger} = mainStore();
     const { username } = useParams();
     const [singleUser, setSingleUser] = useState(null);
     const [commonConversations, setCommonConversations] = useState([]);
     const nav = useNavigate();
 
-    useEffect(() => {
-        const fetchSingleUser = async () => {
-            try {
-                const res = await http.get(`/user/${username}`);
-                if (res.success) {
-                    setSingleUser(res.data);
-                } else {
-                    console.error("Failed to fetch user");
-                }
-            } catch (error) {
-                console.error("Error fetching user", error);
+
+
+    const fetchSingleUser = async () => {
+        try {
+            const res = await http.get(`/user/${username}`);
+            if (res.success) {
+                setSingleUser(res.data);
+            } else {
+                console.error("Failed to fetch user");
             }
-        };
+        } catch (error) {
+            console.error("Error fetching user", error);
+        }
+    };
+    socketListener(socket, fetchSingleUser)
+
+    useEffect(() => {
         fetchSingleUser();
     }, [username]);
 
@@ -45,6 +50,7 @@ const SingleUserPage = () => {
             if (res.success) {
                 setUser(res.data.updateUser);
                 nav(`/chat/${res.data.conversation._id}`);
+                socket.emit("conv",singleUser._id)
             } else {
                 console.error("Failed to create conversation");
             }
@@ -66,6 +72,8 @@ const SingleUserPage = () => {
     }, [singleUser, user]);
     console.log(commonConversations[0])
     console.log(commonConversations)
+
+
     return (
         <div className="p-5 flex justify-center ">
             <div className="card glass w-96">

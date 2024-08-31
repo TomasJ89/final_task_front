@@ -4,8 +4,9 @@ import mainStore from "../store/mainStore.jsx";
 import {socket} from "../plugins/sockets.jsx";
 
 const Toolbar = () => {
-    const {loggedIn,setUser, setLoggedIn,user} = mainStore()
+    const {loggedIn, setUser, setLoggedIn, user} = mainStore()
     const nav = useNavigate()
+console.log(user)
     function logOut() {
         localStorage.setItem(`${user.username} token`, null);
         setLoggedIn(false);
@@ -44,17 +45,20 @@ const Toolbar = () => {
                                     <Link to="/allUsers">All Users</Link>
                                 </li>
                                 <li>
-                                    <Link to="/conversations">My Conversations ({user?.conversations.length})</Link>
+                                    <Link to={user?.conversations?.length === 0 ? "#" : "/conversations"}
+                                          onClick={(e) => user?.conversations?.length === 0 && e.preventDefault()}
+                                          className={user?.conversations?.length === 0 ? ' opacity-50' : ''}
+                                    >My Conversations ({user?.conversations.length})</Link>
                                 </li>
                                 <li>
                                     <button onClick={logOut}>Log Out</button>
                                 </li>
                             </> : <>
                                 <li>
-                                    <button onClick={()=>nav("/")}>Login</button>
+                                    <button onClick={() => nav("/")}>Login</button>
                                 </li>
                                 <li>
-                                    <button onClick={()=>nav("/register")}>Register</button>
+                                    <button onClick={() => nav("/register")}>Register</button>
                                 </li>
                             </>
                             }
@@ -82,8 +86,22 @@ const Toolbar = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="/conversations" className="flex items-center space-x-3">
+                                    <Link to={user?.conversations?.length === 0 ? "#" : "/conversations"}
+                                          onClick={(e) => user?.conversations?.length === 0 && e.preventDefault()}
+                                          className={`flex items-center space-x-3 ${user?.conversations?.length === 0 ? ' opacity-50' : ''}`}
+                                    >
                                         <span>My Conversations ({user?.conversations.length})</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/notifications" className="flex items-center space-x-3">
+                                        <span>Notifications ({user?.notifications?.length}) </span>
+                                        <img
+                                            className="h-5 border-gray-600 cursor-pointer"
+                                            src="https://www.svgrepo.com/show/31480/notification-bell.svg"
+                                            alt="upload"
+                                            onClick={() => setSettings(!settings)}
+                                        />
                                     </Link>
                                 </li>
                             </>

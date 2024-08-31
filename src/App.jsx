@@ -5,6 +5,7 @@ import ProfilePage from "./pages/ProfilePage.jsx";
 import AllUsersPage from "./pages/AllUsersPage.jsx";
 import SingleUserPage from "./pages/SingleUserPage.jsx";
 import ConversationsPage from "./pages/ConversationsPage.jsx";
+import NotificationPage from "./pages/NotificationPage.jsx";
 import ChatPage from "./pages/ChatPage.jsx";
 import Toolbar from "./components/Toolbar.jsx";
 import Footer from "./components/Footer.jsx";
@@ -14,7 +15,7 @@ import http from "./plugins/http.jsx";
 import {socket} from "./plugins/sockets.jsx"
 
 function App() {
-    const {setLoggedIn, setUser,setLoading,user} = mainStore()
+    const {setLoggedIn, setUser,setLoading,user,socketTrigger,setSocketTrigger} = mainStore()
 
     // useEffect(() => {
     //         autoLogin()
@@ -36,6 +37,32 @@ function App() {
     //         console.error('Auto-login error:', error);
     //     }
     // }
+    useEffect(() => {
+        socket.on("update", () => {
+            if (user) {
+                updateUser(); // Directly call the update function when the "update" message is received
+            }
+        });
+
+        return () => {
+            socket.off("update");
+        };
+
+    }, [user, socket]);
+
+    const updateUser = async () => {
+        const data = { id: user._id };
+        try {
+            const res = await http.post("/updatedUser", data);
+            if (res.success) {
+                setUser(res.data);
+            } else {
+                console.log(res.message);
+            }
+        } catch (error) {
+            console.error("Error updating user:", error);
+        }
+    };
 
     return (
         <>
@@ -51,6 +78,7 @@ function App() {
                             <Route element={<SingleUserPage/>} path="/user/:username"/>
                             <Route element={<ConversationsPage/>} path="/conversations"/>
                             <Route element={<ChatPage/>} path="/chat/:conversationsId"/>
+                            <Route element={<NotificationPage/>} path="/notifications"/>
                         </Routes>
                     </div>
                 </div>

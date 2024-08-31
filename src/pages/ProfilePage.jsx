@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import mainStore from "../store/mainStore.jsx";
 import http from "../plugins/http.jsx";
 import {useNavigate} from "react-router-dom";
+import {socket} from "../plugins/sockets.jsx";
 
 const ProfilePage = () => {
         const {user, setUser, loading} = mainStore()
@@ -25,6 +26,7 @@ const ProfilePage = () => {
             const token = localStorage.getItem(`${user.username} token`);
             const res = await http.postAuth("/update-photo", data, token)
             if (res.success) {
+                socket.emit("updateProfile")
                 setUser(res.data)
                 setError(null);
             } else {
@@ -44,6 +46,7 @@ const ProfilePage = () => {
             const res = await http.postAuth("/update-username", data, token)
             if (res.success) {
                 setUser(res.data)
+                socket.emit("updateProfile")
                 setError(null);
             } else {
                 setError(res.message);
@@ -103,8 +106,9 @@ const ProfilePage = () => {
                                 <h2 className="card-title ">{user?.username}</h2>
                                 <p>Aš pupius fainuoliukas</p>
                                 <div className="card-actions justify-end">
-                                    <button className="btn bg-blue-300"
-                                            onClick={()=> nav("/conversations")}>My Conversations
+                                    <button className={`btn bg-blue-300`}
+                                            disabled={user?.conversations?.length === 0}
+                                            onClick={()=> nav(user?.conversations?.length === 0 ? "#" : "/conversations")}>My Conversations
                                         ({user?.conversations.length})
                                     </button>
                                 </div>
