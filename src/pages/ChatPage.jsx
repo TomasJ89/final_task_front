@@ -57,7 +57,6 @@ const ChatPage = () => {
             })
 
             socket.on("addMessage", message => {
-                console.log(message)
                 setAllMessages(prevMessages => [...prevMessages, message]);
             });
 
@@ -67,9 +66,8 @@ const ChatPage = () => {
             };
         }
     }, [conversationsId]);
-    console.log(chatUsers[0])
     useEffect(() => {
-        // Scroll to the last message whenever `allMessages` updates
+
         if (lastMessageRef.current) {
             lastMessageRef.current.scrollIntoView({behavior: "smooth"});
         }
@@ -100,7 +98,6 @@ const ChatPage = () => {
         const res = await http.post("/notification", notification);
         if(res.success) {
             const recipient = res.data
-            console.log(res.data)
             socket.emit("conv",recipient._id)
         }
     }
@@ -113,7 +110,6 @@ const ChatPage = () => {
         }
         const res = await http.post("/like", data);
         if (res.success) {
-            console.log(res.data)
             conversationFetch()
             socket.emit("like", conversationsId);
             if (!chatUsers.find(x => x.userId === recipient._id)) {
@@ -183,7 +179,7 @@ const ChatPage = () => {
                                                 <div className="relative group">
                                                     <span className="pt-1 cursor-pointer opacity-50">Likes: {msg.likes.length}</span>
                                                     <div
-                                                        className="absolute opacity-0 group-hover:opacity-100 duration-500 ease-in-out p-2 bg-blue-400 text-black rounded top-5 left-14 transform -translate-x-1/2 whitespace-nowrap">
+                                                        className="absolute opacity-0 group-hover:opacity-100 duration-500 ease-in-out p-2 bg-blue-300 text-gray-600 rounded top-5 left-14 transform -translate-x-1/2 whitespace-nowrap">
                                                         {recipient.username} likes this message
                                                     </div>
                                                 </div>

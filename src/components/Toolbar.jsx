@@ -6,7 +6,7 @@ import {socket} from "../plugins/sockets.jsx";
 const Toolbar = () => {
     const {loggedIn, setUser, setLoggedIn, user} = mainStore()
     const nav = useNavigate()
-console.log(user)
+
     function logOut() {
         localStorage.setItem(`${user.username} token`, null);
         setLoggedIn(false);

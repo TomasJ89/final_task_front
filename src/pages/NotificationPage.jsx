@@ -13,14 +13,12 @@ const NotificationPage = () => {
         }
         try {
             const token = localStorage.getItem(`${user.username} token`);
-            console.log(token);
             if (!token) {
                 console.error("No token found for the user");
                 return;
             }
             const res = await http.postAuth("/delete-notification", data, token)
             if (res.success) {
-                console.log(res.data)
               setUser(res.data)
             } else {
                 console.error('Fetching failed:', res.message);

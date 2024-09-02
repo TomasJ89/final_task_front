@@ -6,20 +6,22 @@ import {socket} from "../plugins/sockets.jsx";
 
 const ConversationsPage = () => {
 
-    const {user,setUser} = mainStore()
+    const {user,setUser,loading,setLoading} = mainStore()
     const [conversations,setConversations] = useState([])
     const nav= useNavigate()
 
     useEffect(() => {
+        setLoading(true)
 
         http.get(`/all-conversations/${user?._id}`)
             .then(res => {
                 if (res.success) {
                 setConversations(res.data)
-                    console.log(res.data)
+                    setLoading(false)
                 } else {
-                    console.error('Fetching failed:', res.message);
+                    // console.error('Fetching failed:', res.message);
                     setConversations([])
+                    setLoading(false)
                 }
             })
     }, [user]);
@@ -40,46 +42,58 @@ const ConversationsPage = () => {
     }
 
     return (
-        <div className="p-5 flex justify-center" >
-            {conversations.length === 0?
-                <h1 className="font-semibold text-xl mt-80 ">You don't have active conversations at the moment</h1> :
+        <div>
+            {loading ? <div className="flex items-center justify-center h-screen">
+                    <span className="loading loading-ring loading-lg"></span>
+                </div> :
                 <>
-                    <div className="w-full min-h-[75vh] max-h-[75vh] overflow-y-scroll bg-base-200 flex flex-col gap-2  items-center rounded-lg p-5">
-                        <h1 className="font-semibold text-xl mb-5">All conversations:</h1>
-                        {conversations?.map(x =>
-                            <div key={x._id}
-                                 className="card w-full lg:w-2/3 lg:mt-0 mt-3 bg-base-100 h-2/6 md:h-1/6 p-2 shadow-lg rounded-lg flex items-center justify-center flex-row cursor-pointer hover:bg-blue-200/25 transition-all hover:scale-105">
-                                <div className="flex-1 ml-4">
-                                    <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                        Conversation with <span
-                                        className="font-bold">{x.members.find(member => member._id !== user._id)?.username}</span>
-                                    </p>
-                                    <div className="chat-footer opacity-50 mt-2">Created At :
-                                        {new Date(x.createdAt
-                                        ).toLocaleDateString('lt-LT', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}
-                                    </div>
+                    <div className="p-5 flex justify-center">
+                        {conversations.length === 0 ?
+                            <h1 className="font-semibold text-xl mt-80 ">You don't have active conversations at the
+                                moment</h1> :
+                            <>
+                                <div
+                                    className="w-full min-h-[75vh] max-h-[75vh] overflow-y-scroll bg-base-200 flex flex-col gap-2  items-center rounded-lg p-5">
+                                    <h1 className="font-semibold text-xl mb-5">All conversations:</h1>
+                                    {conversations?.map(x =>
+                                        <div key={x._id}
+                                             className="card w-full lg:w-2/3 lg:mt-0 mt-3 bg-base-100 h-2/6 md:h-1/6 p-2 shadow-lg rounded-lg flex items-center justify-center flex-row cursor-pointer hover:bg-blue-200/25 transition-all hover:scale-105">
+                                            <div className="flex-1 ml-4">
+                                                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                                    Conversation with <span
+                                                    className="font-bold">{x.members.find(member => member._id !== user._id)?.username}</span>
+                                                </p>
+                                                <div className="chat-footer opacity-50 mt-2">Created At :
+                                                    {new Date(x.createdAt
+                                                    ).toLocaleDateString('lt-LT', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                    })}
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col md:flex-row">
+                                                <button className="btn btn-error m-1"
+                                                        onClick={() => deleteConversation(x)}>Delete conversation
+                                                </button>
+                                                <button className="btn bg-blue-300 m-1"
+                                                        onClick={() => nav(`/chat/${x._id}`)}>Go to conversation
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
                                 </div>
-                                <div className="flex flex-col md:flex-row">
-                                    <button className="btn btn-error m-1"
-                                            onClick={() => deleteConversation(x)}>Delete conversation
-                                    </button>
-                                    <button className="btn bg-blue-300 m-1"
-                                            onClick={() => nav(`/chat/${x._id}`)}>Go to conversation
-                                    </button>
-                                </div>
-                            </div>
-                        )}
+                            </>}
 
                     </div>
-                </>}
+                </>
+            }
 
         </div>
+
 
     );
 };

@@ -20,7 +20,6 @@ const LoginPage = ({socket}) => {
         };
         const res = await http.post("/login", user);
         if (res.success) {
-           console.log(res)
             localStorage.setItem(`${res.data.username} token`, res.token)
             setLoggedIn(true);
             setUser(res.data)

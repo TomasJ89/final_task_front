@@ -67,12 +67,9 @@ const SingleUserPage = () => {
         if (singleUser && user) {
             const commonConvs = getCommonConversations(user.conversations, singleUser.conversations);
             setCommonConversations(commonConvs);
-            console.log("Common conversations:", commonConvs);
+
         }
     }, [singleUser, user]);
-    console.log(commonConversations[0])
-    console.log(commonConversations)
-
 
     return (
         <div className="p-5 flex justify-center ">
