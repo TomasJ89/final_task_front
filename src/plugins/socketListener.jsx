@@ -8,10 +8,12 @@ const socketListener = (socket,fetchData) => {
         };
 
         socket.on("updatedProfile", handleUpdatedProfile);
+        socket.on("likedMsg",handleUpdatedProfile)
 
         // Cleanup the event listener
         return () => {
             socket.off("updatedProfile", handleUpdatedProfile);
+            socket.off("likedMsg",handleUpdatedProfile)
         };
     }, [socket, fetchData]);
 

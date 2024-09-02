@@ -6,7 +6,7 @@ import {socket} from "../plugins/sockets.jsx";
 import socketListener from "../plugins/socketListener.jsx";
 
 const ChatPage = () => {
-    const {user} = mainStore();
+    const {user,setUser} = mainStore();
     const {conversationsId} = useParams();
     const [recipient, setRecipient] = useState(null);
     const [inputMessage, setInputMessage] = useState("");
@@ -14,6 +14,7 @@ const ChatPage = () => {
     const [allMessages, setAllMessages] = useState([]);
     const lastMessageRef = useRef(null);
     const [text, setText] = useState(null)
+    const [chatUsers, setChatUsers] = useState([])
 
 
     const conversationFetch = async () => {
@@ -41,6 +42,7 @@ const ChatPage = () => {
 
     socketListener(socket, conversationFetch)
 
+
     useEffect(() => {
         conversationFetch()
     }, [user]);
@@ -48,25 +50,38 @@ const ChatPage = () => {
 
     useEffect(() => {
         if (conversationsId) {
-            socket.emit("joinRoom", { conversationsId });
+            socket.emit("joinRoom", {conversationsId});
+            socket.on("roomUsers", filteredUsers => {
+                filteredUsers = filteredUsers.filter(x => x.userId !== user._id)
+                setChatUsers(filteredUsers)
+
+            })
 
             socket.on("addMessage", message => {
+                console.log(message)
                 setAllMessages(prevMessages => [...prevMessages, message]);
             });
 
             return () => {
-                socket.emit("leaveRoom", { conversationsId });
+                socket.emit("leaveRoom", {conversationsId});
                 socket.off("addMessage");
             };
         }
     }, [conversationsId]);
-
+    console.log(chatUsers[0])
     useEffect(() => {
         // Scroll to the last message whenever `allMessages` updates
         if (lastMessageRef.current) {
-            lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+            lastMessageRef.current.scrollIntoView({behavior: "smooth"});
         }
     }, [allMessages]);
+    // useEffect(() => {
+    //     socket.on("updatedRecipient",(recipient) => {
+    //         console.log("waaakak")
+    //         console.log("niu",recipient)
+    //         setUser(recipient)
+    //     })
+    // }, []);
 
     async function sendMessage() {
         if (inputMessage === "") {
@@ -81,13 +96,39 @@ const ChatPage = () => {
         const res = await http.post("/send-message", message);
         if (res.success) {
             setInputMessage("");
-            socket.emit("newMessage", { ...res.message, conversationsId });
+            socket.emit("newMessage", {...res.message, conversationsId});
+            if (!chatUsers.find(x => x.userId === res.message.recipient)) {
+                const notification = {...res.message, conversationsId}
+                addNotification(notification)
+            }
+        }
+    }
+
+    async function addNotification(notification) {
+        const res = await http.post("/notification", notification);
+        if(res.success) {
+            const recipient = res.data
+            console.log(res.data)
+            socket.emit("updatedUser", recipient)
+        }
+    }
+
+    async function like(id) {
+        const data = {
+            userId: user._id,
+            msgId: id,
+            conversationsId
+        }
+        const res = await http.post("/like", data);
+        if (res.success) {
+            conversationFetch()
+            socket.emit("like", conversationsId);
         }
     }
 
     return (
         <div className="p-5">
-            {text? <>
+            {text ? <>
                 <div className="p-5 flex justify-center">
                     <h1 className="font-semibold text-xl mt-64 ">{text}</h1>
                 </div>
@@ -102,8 +143,7 @@ const ChatPage = () => {
                                 <div
                                     key={index}
                                     className={msg.sender === user._id ? "chat chat-start" : "chat chat-end"}
-                                    ref={isLastMessage ? lastMessageRef : null} // Attach ref to the last message
-                                >
+                                    ref={isLastMessage ? lastMessageRef : null}>
                                     <div className="chat-image avatar">
                                         <div className="w-10 rounded-full">
                                             <img
@@ -119,7 +159,40 @@ const ChatPage = () => {
                                         className={`chat-bubble ${msg.sender === user._id ? "chat-bubble-info" : "chat-bubble-accent"}`}>
                                         {msg.text}
                                     </div>
-                                    <div className="chat-footer opacity-50">
+                                    <div
+                                        className={`chat-footer ${msg.likes?.some(like => like.user.toString() === user._id) ? " opacity-100" : "opacity-50"}`}>
+                                        {/*{msg.sender !== user._id ? <div className={`flex ${msg.sender === user._id ? "justify-start" : "justify-end"}`}>*/}
+                                        {/*    <img*/}
+                                        {/*        className="h-5 mt-1 cursor-pointer"*/}
+                                        {/*        src={msg.likes?.some(like => like.user.toString() === user._id)?*/}
+                                        {/*            "https://www.svgrepo.com/show/299479/like.svg" :*/}
+                                        {/*            "https://www.svgrepo.com/show/157828/like.svg"}*/}
+                                        {/*        alt="like"*/}
+                                        {/*        onClick={()=>like(msg._id)}*/}
+                                        {/*    />*/}
+                                        {/*    {msg.likes?.length > 0 && <span className="pt-1 ms-1">({msg.likes.length})</span>}*/}
+                                        {/*</div> : {msg.likes?.length > 0 ? <span className="pt-1 ms-1">Likes: ({msg.likes.length})</span> :""} }*/}
+                                        <div
+                                            className={`flex ${msg.sender !== user._id ? "justify-end" : "justify-start"}`}>
+                                            {msg.sender !== user._id ? (
+                                                <>
+                                                    <img
+                                                        className="h-5 mt-1 cursor-pointer"
+                                                        src={msg.likes?.some(like => like.user.toString() === user._id)
+                                                            ? "https://www.svgrepo.com/show/299479/like.svg"
+                                                            : "https://www.svgrepo.com/show/157828/like.svg"}
+                                                        alt="like"
+                                                        onClick={() => like(msg._id)}
+                                                    />
+                                                    {msg.likes?.length > 0 &&
+                                                        <span className="pt-1 ms-1">({msg.likes.length})</span>}
+                                                </>
+                                            ) : (
+                                                msg.likes?.length > 0 &&
+                                                <span className="pt-1">Likes: {msg.likes.length}</span>
+                                            )}
+                                        </div>
+
                                         {new Date(msg.date).toLocaleDateString('lt-LT', {
                                             year: 'numeric',
                                             month: 'numeric',
@@ -129,6 +202,7 @@ const ChatPage = () => {
                                         })}
                                     </div>
                                 </div>
+
                             );
                         })}
                     </div>

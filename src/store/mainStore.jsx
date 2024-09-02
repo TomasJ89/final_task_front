@@ -4,8 +4,6 @@ const useStore = create((set,get) => ({
     loggedIn:false,
     loading:false,
     onlineUsers:[],
-    socketTrigger:false,
-    setSocketTrigger: val => set ({socketTrigger:val}),
     setUser: val => set ({user:val}),
     setLoggedIn: val => set({loggedIn:val}),
     setLoading: val => set({loading:val}),

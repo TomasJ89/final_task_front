@@ -15,7 +15,7 @@ import http from "./plugins/http.jsx";
 import {socket} from "./plugins/sockets.jsx"
 
 function App() {
-    const {setLoggedIn, setUser,setLoading,user,socketTrigger,setSocketTrigger} = mainStore()
+    const {setLoggedIn, setUser,setLoading,user,} = mainStore()
 
     // useEffect(() => {
     //         autoLogin()
@@ -63,6 +63,17 @@ function App() {
             console.error("Error updating user:", error);
         }
     };
+    useEffect(() => {
+        const handleUpdatedRecipient = (recipient) => {
+            setUser(recipient);
+        };
+        socket.on("updatedRecipient", handleUpdatedRecipient);
+
+        return () => {
+            console.log("Cleaning up listener for updatedRecipient");
+            socket.off("updatedRecipient", handleUpdatedRecipient);
+        };
+    }, []);
 
     return (
         <>
