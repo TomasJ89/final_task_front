@@ -63,17 +63,6 @@ function App() {
             console.error("Error updating user:", error);
         }
     };
-    useEffect(() => {
-        const handleUpdatedRecipient = (recipient) => {
-            setUser(recipient);
-        };
-        socket.on("updatedRecipient", handleUpdatedRecipient);
-
-        return () => {
-            console.log("Cleaning up listener for updatedRecipient");
-            socket.off("updatedRecipient", handleUpdatedRecipient);
-        };
-    }, []);
 
     return (
         <>

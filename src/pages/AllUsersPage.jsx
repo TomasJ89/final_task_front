@@ -34,7 +34,7 @@ const AllUsersPage = () => {
     }, []);
 
     return (
-        <div>
+        <div className="min-h-[75vh] max-h-[75vh] overflow-y-scroll">
             <div className="overflow-x-auto mx-5">
                 <table className="table">
                     <thead>

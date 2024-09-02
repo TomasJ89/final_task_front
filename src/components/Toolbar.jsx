@@ -51,6 +51,12 @@ console.log(user)
                                     >My Conversations ({user?.conversations.length})</Link>
                                 </li>
                                 <li>
+                                    <Link to={user?.notifications?.length === 0 ? "#" : "/notifications"}
+                                          onClick={(e) => user?.notifications?.length === 0 && e.preventDefault()}
+                                          className={user?.notifications?.length === 0 ? ' opacity-50' : ''}
+                                    >Notifications ({user?.notifications.length})</Link>
+                                </li>
+                                <li>
                                     <button onClick={logOut}>Log Out</button>
                                 </li>
                             </> : <>
@@ -94,14 +100,17 @@ console.log(user)
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="/notifications" className="flex items-center space-x-3">
-                                        <span>Notifications ({user?.notifications?.length}) </span>
+
+                                    <Link to={user?.notifications?.length === 0 ? "#" : "/notifications"}
+                                          className={` relative flex items-center space-x-3 ${user?.notifications?.length === 0 ? ' opacity-50' : ''}`}>
                                         <img
-                                            className="h-5 border-gray-600 cursor-pointer"
+                                            className="h-9 border-gray-600 cursor-pointer rounded-full p-1"
                                             src="https://www.svgrepo.com/show/31480/notification-bell.svg"
                                             alt="upload"
-                                            onClick={() => setSettings(!settings)}
                                         />
+                                        <span className={`absolute flex top-1 justify-center items-center left-7 h-5 w-5 rounded-full border-black p-1 ${user?.notifications.length===0? "":"bg-amber-300"}`}
+                                        >{user?.notifications?.length}</span>
+
                                     </Link>
                                 </li>
                             </>

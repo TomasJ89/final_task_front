@@ -100,7 +100,7 @@ const ProfilePage = () => {
                                     />
                                     <div
                                         className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out text-xs p-2 bg-gray-200 text-black rounded -top-10 left-14 transform -translate-x-1/2 whitespace-nowrap">
-                                        Profile Settings.
+                                        Profile Settings
                                     </div>
                                 </div>
                                 <h2 className="card-title ">{user?.username}</h2>

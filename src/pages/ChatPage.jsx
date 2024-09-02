@@ -42,7 +42,6 @@ const ChatPage = () => {
 
     socketListener(socket, conversationFetch)
 
-
     useEffect(() => {
         conversationFetch()
     }, [user]);
@@ -75,13 +74,6 @@ const ChatPage = () => {
             lastMessageRef.current.scrollIntoView({behavior: "smooth"});
         }
     }, [allMessages]);
-    // useEffect(() => {
-    //     socket.on("updatedRecipient",(recipient) => {
-    //         console.log("waaakak")
-    //         console.log("niu",recipient)
-    //         setUser(recipient)
-    //     })
-    // }, []);
 
     async function sendMessage() {
         if (inputMessage === "") {
@@ -109,7 +101,7 @@ const ChatPage = () => {
         if(res.success) {
             const recipient = res.data
             console.log(res.data)
-            socket.emit("updatedUser", recipient)
+            socket.emit("conv",recipient._id)
         }
     }
 
@@ -121,8 +113,18 @@ const ChatPage = () => {
         }
         const res = await http.post("/like", data);
         if (res.success) {
+            console.log(res.data)
             conversationFetch()
             socket.emit("like", conversationsId);
+            if (!chatUsers.find(x => x.userId === recipient._id)) {
+                const notification = {
+                    sender:user._id,
+                    recipient:recipient._id,
+                    date:res.data.likes[0].date,
+                    conversationsId,
+                }
+                addNotification(notification)
+            }
         }
     }
 
@@ -136,7 +138,7 @@ const ChatPage = () => {
                 <div className="relative bg-base-200 rounded-lg shadow-lg">
                     <h1 className="bg-blue-300 text-center rounded-t-xl text-lg font-semibold">Chat
                         with {recipient?.username}</h1>
-                    <div className="overflow-y-scroll max-h-96 min-h-[62vh] p-5 mx-5">
+                    <div className="overflow-y-scroll max-h-[75vh] min-h-[75vh] p-5 mx-5">
                         {allMessages?.map((msg, index) => {
                             const isLastMessage = index === allMessages.length - 1;
                             return (
@@ -160,24 +162,13 @@ const ChatPage = () => {
                                         {msg.text}
                                     </div>
                                     <div
-                                        className={`chat-footer ${msg.likes?.some(like => like.user.toString() === user._id) ? " opacity-100" : "opacity-50"}`}>
-                                        {/*{msg.sender !== user._id ? <div className={`flex ${msg.sender === user._id ? "justify-start" : "justify-end"}`}>*/}
-                                        {/*    <img*/}
-                                        {/*        className="h-5 mt-1 cursor-pointer"*/}
-                                        {/*        src={msg.likes?.some(like => like.user.toString() === user._id)?*/}
-                                        {/*            "https://www.svgrepo.com/show/299479/like.svg" :*/}
-                                        {/*            "https://www.svgrepo.com/show/157828/like.svg"}*/}
-                                        {/*        alt="like"*/}
-                                        {/*        onClick={()=>like(msg._id)}*/}
-                                        {/*    />*/}
-                                        {/*    {msg.likes?.length > 0 && <span className="pt-1 ms-1">({msg.likes.length})</span>}*/}
-                                        {/*</div> : {msg.likes?.length > 0 ? <span className="pt-1 ms-1">Likes: ({msg.likes.length})</span> :""} }*/}
+                                        className="chat-footer">
                                         <div
                                             className={`flex ${msg.sender !== user._id ? "justify-end" : "justify-start"}`}>
                                             {msg.sender !== user._id ? (
                                                 <>
                                                     <img
-                                                        className="h-5 mt-1 cursor-pointer"
+                                                        className={`h-5 mt-1 cursor-pointer ${msg.likes?.some(like => like.user.toString() === user._id) ? 'opacity-100' : 'opacity-50'}`}
                                                         src={msg.likes?.some(like => like.user.toString() === user._id)
                                                             ? "https://www.svgrepo.com/show/299479/like.svg"
                                                             : "https://www.svgrepo.com/show/157828/like.svg"}
@@ -185,21 +176,29 @@ const ChatPage = () => {
                                                         onClick={() => like(msg._id)}
                                                     />
                                                     {msg.likes?.length > 0 &&
-                                                        <span className="pt-1 ms-1">({msg.likes.length})</span>}
+                                                        <span className="pt-1 ms-1 opacity-50">({msg.likes.length})</span>}
                                                 </>
                                             ) : (
                                                 msg.likes?.length > 0 &&
-                                                <span className="pt-1">Likes: {msg.likes.length}</span>
-                                            )}
-                                        </div>
+                                                <div className="relative group">
+                                                    <span className="pt-1 cursor-pointer opacity-50">Likes: {msg.likes.length}</span>
+                                                    <div
+                                                        className="absolute opacity-0 group-hover:opacity-100 duration-500 ease-in-out p-2 bg-blue-400 text-black rounded top-5 left-14 transform -translate-x-1/2 whitespace-nowrap">
+                                                        {recipient.username} likes this message
+                                                    </div>
+                                                </div>
 
-                                        {new Date(msg.date).toLocaleDateString('lt-LT', {
-                                            year: 'numeric',
-                                            month: 'numeric',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}
+                                            )}
+                                    </div>
+                                   <div className="opacity-50">
+                                       {new Date(msg.date).toLocaleDateString('lt-LT', {
+                                           year: 'numeric',
+                                           month: 'numeric',
+                                           day: 'numeric',
+                                           hour: '2-digit',
+                                           minute: '2-digit',
+                                       })}
+                                   </div>
                                     </div>
                                 </div>
 
