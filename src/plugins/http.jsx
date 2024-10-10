@@ -1,4 +1,5 @@
-const rootUrl = "http://localhost:2000"
+// const rootUrl = "http://localhost:2000"
+const rootUrl="https://final-task-back1.onrender.com"
 const http = {
     post: (url, data) => {
         const options = {

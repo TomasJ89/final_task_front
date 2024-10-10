@@ -72,8 +72,8 @@ const AllUsersPage = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <th className="flex justify-center ">
-                                            <button className="btn btn-blue">Chat with {user.username}!</button>
+                                        <th className="flex justify-center">
+                                            <button className="btn btn-blue" onClick={()=> nav("/conversations")}>Chat with {user.username}!</button>
                                         </th>
                                     </tr>
                                 ))}

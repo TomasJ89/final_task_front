@@ -15,6 +15,15 @@ const Toolbar = () => {
         socket.emit("logout")
     }
 
+    function Supplier() {
+        this.supply = function () {
+            return this;
+        }
+    }
+
+    var supplier = new Supplier()
+    var supply = supplier.supply()
+    var comparison = (supplier === supply)
     return (
         <div className="container mx-auto">
             <div className="navbar bg-base-100">
@@ -41,6 +50,7 @@ const Toolbar = () => {
                                 <li>
                                     <Link to="/profile">My profile</Link>
                                 </li>
+
                                 <li>
                                     <Link to="/allUsers">All Users</Link>
                                 </li>
@@ -108,7 +118,8 @@ const Toolbar = () => {
                                             src="https://www.svgrepo.com/show/31480/notification-bell.svg"
                                             alt="upload"
                                         />
-                                        <span className={`absolute flex top-1 justify-center items-center left-7 h-5 w-5 rounded-full border-black p-1 ${user?.notifications.length===0? "":"bg-amber-300"}`}
+                                        <span
+                                            className={`absolute flex top-1 justify-center items-center left-7 h-5 w-5 rounded-full border-black p-1 ${user?.notifications.length === 0 ? "" : "bg-amber-300"}`}
                                         >{user?.notifications?.length}</span>
 
                                     </Link>
