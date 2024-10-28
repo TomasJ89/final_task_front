@@ -18,7 +18,7 @@ const AllUsersPage = () => {
         try {
             const res = await http.get("/all-users")
             if (res.success) {
-                const filteredUsers = res.data.filter(x => x._id !== user._id)
+                const filteredUsers = res.data.filter(x => x._id !== user?._id)
                 setAllUsers(filteredUsers);
                 setLoading(false)
             } else {

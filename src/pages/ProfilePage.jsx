@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import {useRef, useState} from 'react';
 import mainStore from "../store/mainStore.jsx";
 import http from "../plugins/http.jsx";
 import {useNavigate} from "react-router-dom";
@@ -23,7 +23,7 @@ const ProfilePage = () => {
             const data = {
                 url: imgRef.current.value,
             }
-            const token = localStorage.getItem(`${user.username} token`);
+            const token = localStorage.getItem(`token`);
             const res = await http.postAuth("/update-photo", data, token)
             if (res.success) {
                 socket.emit("updateProfile")
@@ -42,7 +42,7 @@ const ProfilePage = () => {
             const data = {
                 name: nameRef.current.value,
             }
-            const token = localStorage.getItem(`${user.username} token`);
+            const token = localStorage.getItem(`token`);
             const res = await http.postAuth("/update-username", data, token)
             if (res.success) {
                 setUser(res.data)
@@ -62,7 +62,7 @@ const ProfilePage = () => {
                 oldPassword: oldPassRef.current.value,
                 newPassword: newPassRef.current.value
             }
-            const token = localStorage.getItem(`${user.username} token`);
+            const token = localStorage.getItem(`token`);
             const res = await http.postAuth("/update-password", data, token)
             if (res.success) {
                 setGoodNews(res.message)

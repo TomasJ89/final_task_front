@@ -1,4 +1,5 @@
-import React, {useState, useRef, useEffect} from 'react';
+/* eslint-disable react/prop-types */
+import {useState, useRef, useEffect} from 'react';
 import {useNavigate} from "react-router-dom";
 import http from "../plugins/http.jsx";
 import mainStore from "../store/mainStore.jsx";
@@ -8,7 +9,7 @@ const LoginPage = ({socket}) => {
     const [passHide,setPassHide] = useState(true)
     const nameRef = useRef()
     const passRef = useRef();
-    const {setLoggedIn,setUser,user,setOnlineUsers} = mainStore()
+    const {setLoggedIn,setUser,setOnlineUsers} = mainStore()
     async function login() {
         setError(null);
         if (!nameRef.current.value || !passRef.current.value ) {
@@ -20,7 +21,7 @@ const LoginPage = ({socket}) => {
         };
         const res = await http.post("/login", user);
         if (res.success) {
-            localStorage.setItem(`${res.data.username} token`, res.token)
+            localStorage.setItem(`token`, res.token)
             setLoggedIn(true);
             setUser(res.data)
             nav('/profile');

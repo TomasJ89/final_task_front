@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+// eslint-disable-next-line no-unused-vars
+import React from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import mainStore from "../store/mainStore.jsx";
 import {socket} from "../plugins/sockets.jsx";
@@ -8,22 +9,14 @@ const Toolbar = () => {
     const nav = useNavigate()
 
     function logOut() {
-        localStorage.setItem(`${user.username} token`, null);
+        // localStorage.setItem(` token`, null);
+        localStorage.removeItem('token');
         setLoggedIn(false);
         setUser(null);
         nav("/");
         socket.emit("logout")
     }
 
-    function Supplier() {
-        this.supply = function () {
-            return this;
-        }
-    }
-
-    var supplier = new Supplier()
-    var supply = supplier.supply()
-    var comparison = (supplier === supply)
     return (
         <div className="container mx-auto">
             <div className="navbar bg-base-100">
@@ -80,7 +73,7 @@ const Toolbar = () => {
                             }
                         </ul>
                     </div>
-                    <a className="btn bg-blue-300 text-xl font-thin">ChattApp</a>
+                    <a className="btn bg-blue-300 text-xl font-thin" onClick={()=>nav("/allUsers")}>ChatApp</a>
                 </div>
                 <div className="navbar-center hidden lg:flex">
                     <ul className="menu menu-horizontal flex items-center  px-1 gap-2 space-x-6">

@@ -1,4 +1,3 @@
-import React from 'react';
 import mainStore from "../store/mainStore.jsx";
 import {useNavigate} from "react-router-dom";
 import http from "../plugins/http.jsx";
@@ -12,7 +11,7 @@ const NotificationPage = () => {
             notificationId: id
         }
         try {
-            const token = localStorage.getItem(`${user.username} token`);
+            const token = localStorage.getItem(` token`);
             if (!token) {
                 console.error("No token found for the user");
                 return;
@@ -31,6 +30,7 @@ const NotificationPage = () => {
     return (
         <div className="p-5">
             {user?.notifications.length === 0 ?
+                // eslint-disable-next-line react/no-unescaped-entities
                 <h1 className="font-semibold text-center text-xl mt-72 ">You don't have notifications at the moment</h1>:
                 <>
                     <div

@@ -39,7 +39,7 @@ const SingleUserPage = () => {
             id: singleUser._id
         };
 
-        const token = localStorage.getItem(`${user.username} token`);
+        const token = localStorage.getItem(` token`);
         if (!token) {
             console.error("No token found for the user");
             return;

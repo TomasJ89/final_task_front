@@ -30,7 +30,7 @@ const ConversationsPage = () => {
         const data = {
            id:conversation._id
         }
-        const token = localStorage.getItem(`${user.username} token`);
+        const token = localStorage.getItem(` token`);
         const res = await http.postAuth("/delete-conversation", data, token)
         if (res.success) {
             setUser(res.data)

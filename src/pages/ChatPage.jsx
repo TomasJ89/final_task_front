@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import {useEffect, useState, useRef} from 'react';
 import {useParams} from "react-router-dom";
 import http from "../plugins/http.jsx";
 import mainStore from "../store/mainStore.jsx";
@@ -6,11 +6,11 @@ import {socket} from "../plugins/sockets.jsx";
 import socketListener from "../plugins/socketListener.jsx";
 
 const ChatPage = () => {
-    const {user,setUser} = mainStore();
+    const {user} = mainStore();
     const {conversationsId} = useParams();
     const [recipient, setRecipient] = useState(null);
     const [inputMessage, setInputMessage] = useState("");
-    const [error, setError] = useState(null);
+    const [, setError] = useState(null);
     const [allMessages, setAllMessages] = useState([]);
     const lastMessageRef = useRef(null);
     const [text, setText] = useState(null)
@@ -22,7 +22,7 @@ const ChatPage = () => {
             conversationsId
         };
         try {
-            const token = localStorage.getItem(`${user.username} token`);
+            const token = localStorage.getItem(`token`);
             if (!token) {
                 console.error("No token found for the user");
                 return;
