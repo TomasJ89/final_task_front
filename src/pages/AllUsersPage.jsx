@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import mainStore from "../store/mainStore.jsx";
 import http from "../plugins/http.jsx";
 import {useNavigate} from "react-router-dom";
@@ -9,7 +9,7 @@ const AllUsersPage = () => {
 
     const {user, onlineUsers, loading,setLoading} = mainStore()
     const [allUsers, setAllUsers] = useState([])
-    const [error, setError] = useState(null);
+    const [setError] = useState(null);
     const nav = useNavigate()
 
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import http from '../plugins/http.jsx';
 import mainStore from '../store/mainStore.jsx';
@@ -6,7 +6,7 @@ import {socket} from "../plugins/sockets.jsx";
 import socketListener from "../plugins/socketListener.jsx";
 
 const SingleUserPage = () => {
-    const { setUser, user,socketTrigger ,setSocketTrigger} = mainStore();
+    const { setUser, user} = mainStore();
     const { username } = useParams();
     const [singleUser, setSingleUser] = useState(null);
     const [commonConversations, setCommonConversations] = useState([]);
@@ -39,7 +39,7 @@ const SingleUserPage = () => {
             id: singleUser._id
         };
 
-        const token = localStorage.getItem(` token`);
+        const token = localStorage.getItem(`token`);
         if (!token) {
             console.error("No token found for the user");
             return;

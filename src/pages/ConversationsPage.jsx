@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+/* eslint-disable react/no-unescaped-entities */
+import {useEffect, useState} from 'react';
 import mainStore from "../store/mainStore.jsx";
 import http from "../plugins/http.jsx";
 import {useNavigate} from "react-router-dom";
@@ -30,7 +31,7 @@ const ConversationsPage = () => {
         const data = {
            id:conversation._id
         }
-        const token = localStorage.getItem(` token`);
+        const token = localStorage.getItem(`token`);
         const res = await http.postAuth("/delete-conversation", data, token)
         if (res.success) {
             setUser(res.data)

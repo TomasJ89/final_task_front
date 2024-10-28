@@ -11,7 +11,7 @@ const NotificationPage = () => {
             notificationId: id
         }
         try {
-            const token = localStorage.getItem(` token`);
+            const token = localStorage.getItem(`token`);
             if (!token) {
                 console.error("No token found for the user");
                 return;
