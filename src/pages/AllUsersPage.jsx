@@ -7,8 +7,7 @@ import {socket} from "../plugins/sockets.jsx";
 
 const AllUsersPage = () => {
 
-    const {user, onlineUsers, loading,setLoading} = mainStore()
-    const [allUsers, setAllUsers] = useState([])
+    const {user, onlineUsers, loading,setLoading, allUsers, setAllUsers} = mainStore()
     const [setError] = useState(null);
     const nav = useNavigate()
 

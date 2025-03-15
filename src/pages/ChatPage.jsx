@@ -6,7 +6,7 @@ import {socket} from "../plugins/sockets.jsx";
 import socketListener from "../plugins/socketListener.jsx";
 
 const ChatPage = () => {
-    const {user} = mainStore();
+    const {user,allUsers} = mainStore();
     const {conversationsId} = useParams();
     const [recipient, setRecipient] = useState(null);
     const [inputMessage, setInputMessage] = useState("");
@@ -15,6 +15,7 @@ const ChatPage = () => {
     const lastMessageRef = useRef(null);
     const [text, setText] = useState(null)
     const [chatUsers, setChatUsers] = useState([])
+    const [showModal, setShowModal] = useState(false);
 
 
     const conversationFetch = async () => {
@@ -72,6 +73,8 @@ const ChatPage = () => {
             lastMessageRef.current.scrollIntoView({behavior: "smooth"});
         }
     }, [allMessages]);
+
+
 
     async function sendMessage() {
         if (inputMessage === "") {
@@ -132,8 +135,13 @@ const ChatPage = () => {
                 </div>
             </> : <>
                 <div className="relative bg-base-200 rounded-lg shadow-lg">
-                    <h1 className="bg-blue-300 text-center rounded-t-xl text-lg font-semibold">Chat
-                        with {recipient?.username}</h1>
+                    <div className="bg-blue-300 flex p-2  justify-between items-center rounded-t-xl text-lg font-semibold">
+                        <h1 >Chat
+                            with {recipient?.username}</h1>
+                        <button className="btn btn-success" onClick={()=>setShowModal(true)}>Add to Chat</button>
+                    </div>
+
+
                     <div className="overflow-y-scroll max-h-[75vh] min-h-[75vh] p-5 mx-5">
                         {allMessages?.map((msg, index) => {
                             const isLastMessage = index === allMessages.length - 1;
@@ -218,6 +226,30 @@ const ChatPage = () => {
                     </div>
                 </div>
             </>}
+
+            {showModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                        <h3 className="font-bold text-lg mb-4">All Users</h3>
+                        <ul className="bg-base-100 rounded-box shadow-md divide-y divide-gray-200">
+                            {allUsers.map((user) => (
+                                <li key={user._id} className="flex items-center gap-4 p-3">
+                                    <img className="size-10 rounded-full" src={user.image} alt={user.username} />
+                                    <div className="flex justify-between items-center w-full">
+                                        <span className="text-sm font-medium">{user.username}</span>
+                                        <button className="text-xs uppercase font-semibold opacity-60 hover:opacity-100">
+                                            Add
+                                        </button>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                        <button className="btn btn-error w-full mt-4" onClick={() => setShowModal(false)}>
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
 
         </div>
     );
